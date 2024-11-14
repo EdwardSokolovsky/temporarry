@@ -17,10 +17,40 @@ repositories {
 }
 
 dependencies {
-    implementation platform("com.typesafe.play:play-sbt-plugin_2.13:2.8.20") // Подключаем Play Framework
-    testImplementation "org.scalatestplus.play:scalatestplus-play_2.13:7.0.1"
+    // Основные зависимости
+    implementation "com.typesafe.play:play_2.13:2.8.20"
+    implementation "org.scalatestplus.play:scalatestplus-play_2.13:7.0.1"
+    implementation "org.scalamock:scalamock_2.13:6.0.0"
     implementation "org.postgresql:postgresql:42.7.4"
+    implementation "org.scalikejdbc:scalikejdbc_2.13:4.3.2"
+    implementation "org.scalikejdbc:scalikejdbc-core_2.13:4.3.2"
+    implementation "org.scalikejdbc:scalikejdbc-config_2.13:4.3.2"
+    implementation "org.scalikejdbc:scalikejdbc-play-initializer_2.13:2.8.0-scalikejdbc-4.0"
+    implementation "org.scalikejdbc:scalikejdbc-syntax-support-macro_2.13:4.3.2"
+    implementation "org.liquibase:liquibase-core:4.20.0"
+    implementation "org.apache.kafka:kafka-clients:2.4.0"
+
+    testImplementation "org.scalatestplus.play:scalatestplus-play_2.13:7.0.1"
+    testImplementation "org.scalamock:scalamock_2.13:6.0.0"
+
+    // dependencyOverrides (исключения для версий библиотек)
+    implementation("org.scala-lang.modules:scala-java8-compat_2.13:1.0.2") {
+        because("override conflicting version")
+    }
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.13.5") {
+        because("override conflicting version")
+    }
+    implementation("org.scala-lang.modules:scala-parser-combinators_2.13:2.4.0") {
+        because("override conflicting version")
+    }
+    implementation("org.slf4j:slf4j-api:1.7.36") {
+        because("override conflicting version")
+    }
+    implementation("org.yaml:snakeyaml:2.3") {
+        because("override conflicting version")
+    }
 }
+
 
 configurations.all {
     resolutionStrategy.eachDependency { DependencyResolveDetails details ->
