@@ -1,0 +1,103 @@
+plugins {
+    id 'org.gradle.playframework' // Подключаем Play Framework
+    id 'scala'
+    id 'com.github.maiflai.scalatest'
+    id 'application'
+}
+
+group = 'ru.ss.csc'
+version = '1.2.3'
+scalaVersion = '2.13.14'
+
+repositories {
+    mavenCentral()
+    maven {
+        url 'https://repo.typesafe.com/typesafe/releases/'
+    }
+}
+
+dependencies {
+    implementation platform("com.typesafe.play:play-sbt-plugin_2.13:2.8.20") // Подключаем Play Framework
+    testImplementation "org.scalatestplus.play:scalatestplus-play_2.13:7.0.1"
+    implementation "org.postgresql:postgresql:42.7.4"
+}
+
+configurations.all {
+    resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+        if (details.requested.group == 'org.webjars' && details.requested.name == 'npm') {
+            details.useTarget group: 'org.webjars', name: 'npm', version: '0' // Идентифицируем исключение
+        }
+    }
+}
+
+tasks.withType(ScalaCompile) {
+    scalaCompileOptions.additionalParameters = ['-feature', '-deprecation', '-Werror']
+}
+
+application {
+    mainClass = 'Main' // Укажите главный класс вашего приложения
+}
+
+ext {
+    compilationTime = Instant.now().toEpochMilli().toString()
+    gitCommitHash = 'git rev-parse HEAD'.execute().text.trim()
+}
+
+jar {
+    manifest {
+        attributes(
+                'Implementation-Version': compilationTime,
+                'Implementation-Title': gitCommitHash
+        )
+    }
+}
+
+task copyManifest(type: Copy) {
+    def jarFile = tasks.jar.archiveFile.get().asFile
+    def jarFileNameSans = "${project.group}.${project.name}-${project.version}-sans-externalized-jar.jar"
+    def location = "${buildDir}/libs"
+    def jarFilePathSans = file("${location}/${jarFileNameSans}")
+
+    from zipTree(jarFile).matching { include 'META-INF/MANIFEST.MF' }
+    into jarFilePathSans.parent
+    rename 'MANIFEST.MF', 'META-INF/MANIFEST.MF'
+}
+
+task rollout {
+    dependsOn copyManifest, distZip
+    doLast {
+        def zipFile = tasks.distZip.archiveFile.get().asFile
+        def zipTopDir = project.name
+
+        println "Updating..."
+        copy {
+            from zipTree(zipFile)
+            into "$buildDir/rollout"
+            includeEmptyDirs = false
+            eachFile { file ->
+                // обработка файлов при копировании
+            }
+        }
+
+        def removeConfigFile = { String fileName, String details ->
+            def location = "$zipTopDir/conf/$fileName"
+            println "Removing $location..."
+            delete "$buildDir/rollout/$location"
+        }
+
+        removeConfigFile("dev.conf", "")
+        removeConfigFile("dev/developers", "")
+        removeConfigFile("dev/variables", "")
+    }
+}
+
+tasks.withType(Test) {
+    useTestNG()
+    reports {
+        junitXml.enabled = true
+        html.enabled = true
+        junitXml.destination = file("$buildDir/test-results")
+        html.destination = file("$buildDir/reports/tests")
+    }
+    systemProperty 'testReportDir', "$buildDir/test-report"
+}

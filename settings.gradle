@@ -1,0 +1,27 @@
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+        maven {
+            url 'https://repo.typesafe.com/typesafe/releases/'
+        }
+    }
+    plugins {
+        id 'org.gradle.playframework' version '0.11' // Play Framework плагин для Gradle
+        id 'scala' version '2.13.14'
+        id 'com.github.maiflai.scalatest' version '0.32'
+        id 'application'
+    }
+}
+
+rootProject.name = 'my_project'
+
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.PREFER_SETTINGS)
+    repositories {
+        mavenCentral()
+        maven {
+            url 'https://repo.typesafe.com/typesafe/releases/'
+        }
+    }
+}
