@@ -3,7 +3,28 @@ pluginManagement {
         gradlePluginPortal()
         mavenCentral()
         maven {
-            url 'https://repo.typesafe.com/typesafe/releases/'
+            url 'https://your.custom.repository.com/repo'
+
+            credentials {
+                username = 'yourUsername'
+                password = 'yourPassword'
+            }
+
+            authentication {
+                basic(BasicAuthentication)
+            }
+
+            // Путь к truststore.jks в корне проекта
+            def trustStorePath = file('truststore.jks') // файл truststore лежит в корне проекта
+            def trustStorePassword = findProperty('trustStorePassword') ?: 'defaultPassword'
+
+            // Устанавливаем SSL параметры
+            if (trustStorePath.exists()) {
+                System.setProperty('javax.net.ssl.trustStore', trustStorePath.absolutePath)
+                System.setProperty('javax.net.ssl.trustStorePassword', trustStorePassword)
+            } else {
+                throw new GradleException("TrustStore file not found at: " + trustStorePath)
+            }
         }
     }
     plugins {
