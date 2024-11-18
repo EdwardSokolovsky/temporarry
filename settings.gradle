@@ -1,10 +1,14 @@
 pluginManagement {
     repositories {
         ivy {
-            url "$System.env.HOME/.ivy2/local" // Указываем путь к Ivy-репозиторию
-            layout 'pattern', {
-                artifact '[organisation]/[module]/[revision]/[type]s/[artifact].[ext]'
-                ivy '[organisation]/[module]/[revision]/ivys/ivy.xml'
+            url "$System.env.HOME/.ivy2/local" // Укажите путь к локальному Ivy-репозиторию
+            patternLayout {
+                artifact "[organisation]/[module]/[revision]/[type]s/[artifact].[ext]"
+                ivy "[organisation]/[module]/[revision]/ivys/ivy.xml"
+            }
+            metadataSources {
+                ivyDescriptor() // Указывает Gradle использовать ivy.xml для метаданных
+                artifact()      // Подключает поиск артефактов
             }
         }
         gradlePluginPortal()
