@@ -3,7 +3,7 @@ pluginManagement {
         ivy {
             url "$System.env.HOME/.ivy2/local" // Укажите путь к локальному Ivy-репозиторию
             patternLayout {
-                artifact "[organisation]/[module]/[revision]/[type]s/[artifact].[ext]"
+                artifact "[organisation]/[module]/[revision]/[classifier]s/[artifact]_[revision]([classifier])([ext])"
                 ivy "[organisation]/[module]/[revision]/ivys/ivy.xml"
             }
             metadataSources {
