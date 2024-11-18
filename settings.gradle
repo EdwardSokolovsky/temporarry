@@ -3,7 +3,7 @@ pluginManagement {
         ivy {
             url "$System.env.HOME/.ivy2/local"
             patternLayout {
-                artifact "[organisation]/[module]_[classifier]/[revision]/jars/[artifact]_[classifier]-[revision].[ext]"
+                artifact "[organisation]/[module]_[classifier]/[revision]/jars/[artifact]_[classifier].[ext]"
 //                ~/.ivy2/local/com/example/my-library_2.13/1.0.0/jars/my-library_2.13.jar
                 ivy "[organisation]/[module]_[classifier]/[revision]/ivys/ivy.xml"
 //                ~/.ivy2/local/com/example/my-library_2.13/1.0.0/ivys/ivy.xml
