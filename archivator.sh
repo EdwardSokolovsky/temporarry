@@ -15,7 +15,7 @@ PASSWORD=$2
 ACTION=$3
 
 if [ "$ACTION" == "zip" ]; then
-    if [ ! -f "$FILE" ]; then
+    if [ ! -e "$FILE" ]; then
         echo "Error: File '$FILE' does not exist."
         exit 1
     fi
@@ -27,7 +27,7 @@ if [ "$ACTION" == "zip" ]; then
     fi
 
     TAR_FILE="${FILE}.tar"
-    tar -cvf "$TAR_FILE" $EXCLUDE "$FILE"
+    tar -cvzf "$TAR_FILE" $EXCLUDE "$FILE"
 
     GPG_FILE="${TAR_FILE}.gpg"
     gpg --symmetric --batch --passphrase "$PASSWORD" -o "$GPG_FILE" "$TAR_FILE"
@@ -37,7 +37,7 @@ if [ "$ACTION" == "zip" ]; then
     echo "File '$FILE' successfully archived and encrypted as '$GPG_FILE'."
 
 elif [ "$ACTION" == "unzip" ]; then
-    if [ ! -f "$FILE" ]; then
+    if [ ! -e "$FILE" ]; then
         echo "Error: Encrypted file '$FILE' does not exist."
         exit 1
     fi
@@ -49,7 +49,9 @@ elif [ "$ACTION" == "unzip" ]; then
 
     rm "$TAR_FILE"
 
-    echo "File '$FILE' successfully decrypted and extracted."
+    ORIGINAL_FILE="${TAR_FILE%.tar}"
+
+    echo "File '$ORIGINAL_FILE' successfully decrypted and extracted."
 
 else
     echo "Error: Unknown action '$ACTION'. Use 'zip' or 'unzip'."
