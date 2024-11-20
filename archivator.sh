@@ -20,6 +20,12 @@ if [ "$ACTION" == "zip" ]; then
         exit 1
     fi
 
+    if [ "$FILE" == "$HOME" ]; then
+        EXCLUDE="--exclude=$(basename $0)"
+    else
+        EXCLUDE=""
+    fi
+
     TAR_FILE="${FILE}.tar"
     tar -cvf "$TAR_FILE" "$FILE"
 
