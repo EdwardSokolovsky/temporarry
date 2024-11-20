@@ -14,7 +14,6 @@ fi
 FILE=$1
 PASSWORD=$2
 ACTION=$3
-OUTPUT_DIR="./"  # Папка для извлечения, по умолчанию текущая
 
 # Проверка действия
 if [ "$ACTION" == "zip" ]; then
@@ -48,17 +47,17 @@ elif [ "$ACTION" == "unzip" ]; then
     TAR_FILE="${FILE%.gpg}"
     gpg --decrypt --batch --passphrase "$PASSWORD" -o "$TAR_FILE" "$FILE"
 
-    # Разархивирование tar файла в указанную директорию
-    tar -xvzf "$TAR_FILE" -C "$OUTPUT_DIR"
+    # Проверка содержимого архива
+    echo "Contents of the archive:"
+    tar -tf "$TAR_FILE"
+
+    # Разархивирование tar файла
+    tar -xvf "$TAR_FILE"
 
     # Удаление расшифрованного tar файла
     rm "$TAR_FILE"
 
-    # Извлечение исходного имени файла (без расширения .tar)
-    ORIGINAL_FILE="${TAR_FILE%.tar}"
-
-    # Выводим информацию о восстановленном файле
-    echo "File '$ORIGINAL_FILE' successfully decrypted and extracted to '$OUTPUT_DIR'."
+    echo "File '$FILE' successfully decrypted and extracted."
 
 else
     echo "Error: Unknown action '$ACTION'. Use 'zip' or 'unzip'."
