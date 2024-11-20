@@ -23,9 +23,16 @@ if [ "$ACTION" == "zip" ]; then
         exit 1
     fi
 
+    # Исключить скрипт, если архивация происходит в текущей папке
+    if [ "$FILE" == "$HOME" ]; then
+        EXCLUDE="--exclude=$(basename $0)"
+    else
+        EXCLUDE=""
+    fi
+
     # Создание архива tar
     TAR_FILE="${FILE}.tar"
-    tar -cvf "$TAR_FILE" "$FILE"
+    tar -cvf "$TAR_FILE" $EXCLUDE "$FILE"
 
     # Шифрование архива с помощью gpg
     GPG_FILE="${TAR_FILE}.gpg"
@@ -34,7 +41,7 @@ if [ "$ACTION" == "zip" ]; then
     # Удаление исходного tar файла
     rm "$TAR_FILE"
 
-    echo "File or folder '$FILE' successfully archived and encrypted as '$GPG_FILE'."
+    echo "Folder '$FILE' successfully archived and encrypted as '$GPG_FILE'."
 
 elif [ "$ACTION" == "unzip" ]; then
     # Проверка наличия зашифрованного файла
@@ -46,10 +53,6 @@ elif [ "$ACTION" == "unzip" ]; then
     # Расшифровка файла с помощью gpg
     TAR_FILE="${FILE%.gpg}"
     gpg --decrypt --batch --passphrase "$PASSWORD" -o "$TAR_FILE" "$FILE"
-
-    # Проверка содержимого архива
-    echo "Contents of the archive:"
-    tar -tf "$TAR_FILE"
 
     # Разархивирование tar файла
     tar -xvf "$TAR_FILE"
@@ -63,4 +66,3 @@ else
     echo "Error: Unknown action '$ACTION'. Use 'zip' or 'unzip'."
     exit 1
 fi
-
