@@ -27,7 +27,7 @@ if [ "$ACTION" == "zip" ]; then
     fi
 
     TAR_FILE="${FILE}.tar"
-    tar -cvf "$TAR_FILE" "$FILE"
+    tar -cvf "$TAR_FILE" $EXCLUDE "$FILE"
 
     GPG_FILE="${TAR_FILE}.gpg"
     gpg --symmetric --batch --passphrase "$PASSWORD" -o "$GPG_FILE" "$TAR_FILE"
